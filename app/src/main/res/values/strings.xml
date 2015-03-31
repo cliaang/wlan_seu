@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">wlan_seu</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="usename">用户名</string>
+    <string name="password">密码</string>
+    <string name="ok">确定</string>
+    <string name="title_activity_aty_login">AtyLogin</string>
+</resources>
