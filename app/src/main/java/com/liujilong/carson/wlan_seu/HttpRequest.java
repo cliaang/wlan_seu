@@ -19,7 +19,10 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 public class HttpRequest {
-
+    private AtyLogin.HttpTask mHttpTask;
+    public HttpRequest(AtyLogin.HttpTask mHttpTask){
+        this.mHttpTask = mHttpTask;
+    }
     private static int tick = 0;
     private class MyHostnameVerifier implements HostnameVerifier {
         @Override
@@ -42,6 +45,9 @@ public class HttpRequest {
         }
     }
     public  String httpsPost(String url, String input) throws InterruptedException {
+        if (mHttpTask.isCancelled()){
+            return "connect overtime";
+        }
         try{
             SSLContext sc = SSLContext.getInstance("TLS");
             sc.init(null, new TrustManager[]{new MyTrustManager()}, new SecureRandom());
@@ -52,7 +58,7 @@ public class HttpRequest {
             conn.setConnectTimeout(10000);
             conn.setDoOutput(true);
             conn.setDoInput(true);
-            conn.connect();
+            //conn.connect();
 
             OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream(), "utf-8");
             BufferedWriter bw = new BufferedWriter(osw);

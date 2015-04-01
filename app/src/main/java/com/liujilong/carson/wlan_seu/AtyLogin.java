@@ -1,12 +1,12 @@
 package com.liujilong.carson.wlan_seu;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -17,7 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 
 
-public class AtyLogin extends ActionBarActivity {
+public class AtyLogin extends Activity {
     private TextView userInfo, tv_answer;
     public  File file;
     private String res="";
@@ -56,41 +56,47 @@ public class AtyLogin extends ActionBarActivity {
         findViewById(R.id.btn_connect).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AsyncTask<String, Integer, String>() {
-                    @Override
-                    protected String doInBackground(String... params) {
-                        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-                        if(!wifiManager.isWifiEnabled()){
-                            publishProgress(0);  //opining wifi
-                            wifiManager.setWifiEnabled(true);
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            while (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLING) {
-                                try {
-                                    Thread.sleep(100);
-                                } catch (InterruptedException ie) {
-                                }
-                            }
-                        }
-                        publishProgress(1);  //wifi open success
-                        Log.i("tag",wifiManager.isWifiEnabled()?"wife enabled":"wife disabled");
-                        WifiConfiguration wifiConfig = new WifiConfiguration();
-                        wifiConfig.SSID = "\""+"seu-wlan"+"\"";
-                        wifiConfig.status = WifiConfiguration.Status.DISABLED;
-                        wifiConfig.priority = 40;
-                        wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-                        wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-                        wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-                        wifiConfig.allowedAuthAlgorithms.clear();
-                        wifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-                        wifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-                        wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-                        wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
-                        wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-                        wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+                HttpTask myTask = new HttpTask();
+                myTask.execute("https://w.seu.edu.cn/portal/login.php",res);
+            }
+        });
+    }
+
+    public class HttpTask extends AsyncTask<String, Integer, String>{
+        @Override
+        protected String doInBackground(String... params) {
+            WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            if(!wifiManager.isWifiEnabled()){
+                publishProgress(0);  //opining wifi
+                wifiManager.setWifiEnabled(true);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                while (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLING) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ie) {
+                    }
+                }
+            }
+            publishProgress(1);  //wifi open success
+            Log.i("tag",wifiManager.isWifiEnabled()?"wife enabled":"wife disabled");
+            WifiConfiguration wifiConfig = new WifiConfiguration();
+            wifiConfig.SSID = "\""+"seu-wlan"+"\"";
+            wifiConfig.status = WifiConfiguration.Status.DISABLED;
+            wifiConfig.priority = 40;
+            wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+            wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+            wifiConfig.allowedAuthAlgorithms.clear();
+            wifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+            wifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+            wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+            wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+            wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+            wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
 //                        WifiConfiguration tempConfig = null;
 ////                        try {
 //                            tempConfig = IsExsits("seu-wlan");
@@ -101,45 +107,51 @@ public class AtyLogin extends ActionBarActivity {
 //                        if (tempConfig != null) {
 //                            wifiManager.removeNetwork(tempConfig.networkId);
 //                        }
-                        publishProgress(2);  //connecting to seu_wlan
-                        int netID = wifiManager.addNetwork(wifiConfig);
-                        Log.i("tag","netId: "+netID);
-                        boolean enabled = wifiManager.enableNetwork(netID, true);
-                        Log.i("tag", "enableNetwork status enable=" + enabled);
-                        boolean connected = wifiManager.reconnect();
-                        Log.i("tag", "enableNetwork connected=" + connected);
+            publishProgress(2);  //connecting to seu_wlan
+            int netID = wifiManager.addNetwork(wifiConfig);
+            Log.i("tag","netId: "+netID);
+            boolean enabled = wifiManager.enableNetwork(netID, true);
+            Log.i("tag", "enableNetwork status enable=" + enabled);
+            boolean connected = wifiManager.reconnect();
+            Log.i("tag", "enableNetwork connected=" + connected);
 
-
-                        publishProgress(3);  //start to login
-                        HttpRequest hr = new HttpRequest();
-                        String ans = null;
-                        try {
-                            ans = hr.httpsPost(params[0], params[1]);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        return ans;
+            new Thread(){
+                public void run(){
+                    try {
+                        Thread.sleep(30000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-
-                    @Override
-                    protected void onProgressUpdate(Integer... values) {
-                        String[] messages = new String[]{"opining wifi", "wifi open success","connecting to seu_wlan","start to login"};
-                        tv_answer.setText(messages[values[0]]);
-                        super.onProgressUpdate(values);
-                    }
-
-                    @Override
-                    protected void onPostExecute(String s) {
-                        if (s!=null){
-                            char[] convertBuf=new char[2];
-                            tv_answer.setText(loadConvert(s.toCharArray(),0,s.length(),convertBuf));
-                        }
-                        else
-                            tv_answer.setText("null result");
-                    }
-                }.execute("https://w.seu.edu.cn/portal/login.php",res);
+                    cancel(true);
+                }
+            }.start();
+            publishProgress(3);  //start to login
+            HttpRequest hr = new HttpRequest(this);
+            String ans = null;
+            try {
+                ans = hr.httpsPost(params[0], params[1]);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        });
+            return ans;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            String[] messages = new String[]{"opining wifi", "wifi open success","connecting to seu_wlan","start to login"};
+            tv_answer.setText(messages[values[0]]);
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (s!=null){
+                char[] convertBuf=new char[2];
+                tv_answer.setText(loadConvert(s.toCharArray(),0,s.length(),convertBuf));
+            }
+            else
+                tv_answer.setText("null result");
+        }
     }
 
     private  String loadConvert (char[] in, int off, int len, char[] convtBuf) {
