@@ -20,6 +20,7 @@ import javax.net.ssl.X509TrustManager;
 
 public class HttpRequest {
 
+    private static int tick = 0;
     private class MyHostnameVerifier implements HostnameVerifier {
         @Override
         public boolean verify(String hostname, SSLSession session) {
@@ -40,13 +41,15 @@ public class HttpRequest {
             return null;
         }
     }
-    public  String httpsPost(String url, String input){
+    public  String httpsPost(String url, String input) throws InterruptedException {
         try{
             SSLContext sc = SSLContext.getInstance("TLS");
             sc.init(null, new TrustManager[]{new MyTrustManager()}, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
             HttpsURLConnection.setDefaultHostnameVerifier(new MyHostnameVerifier());
             HttpsURLConnection conn = (HttpsURLConnection)new URL(url).openConnection();
+
+            conn.setConnectTimeout(10000);
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.connect();
@@ -67,7 +70,14 @@ public class HttpRequest {
             return sb.toString();
         }catch(Exception e){
             Log.e(this.getClass().getName(), e.getMessage());
+            if (tick>=20){
+                tick=0;
+                return "unable to find host";
+            }
+            tick++;
+            Log.i("tag","tick="+tick);
+            Thread.sleep(2000);
+            return this.httpsPost(url,input);
         }
-        return null;
     }
 }

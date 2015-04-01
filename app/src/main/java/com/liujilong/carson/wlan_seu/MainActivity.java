@@ -9,7 +9,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import org.apache.http.util.EncodingUtils;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -24,7 +27,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         file = new File(MainActivity.this.getFilesDir(), FILE_NAME);
         Log.i("tag",file.exists()?"exist":"not exist");
-        if (!file.exists()) {
+        boolean has_username=getIntent().getBooleanExtra("has username",false);
+        if (!file.exists()||has_username) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
             username = (TextView) findViewById(R.id.username);
@@ -47,6 +51,25 @@ public class MainActivity extends Activity {
                     finish();
                 }
             });
+            if (has_username){
+                String res = "";
+                try{
+                    FileInputStream fin = openFileInput(MainActivity.FILE_NAME);
+                    int length = fin.available();
+                    byte [] buffer = new byte[length];
+                    fin.read(buffer);
+                    res = EncodingUtils.getString(buffer, "UTF-8");
+                    fin.close();
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+                int stringIndex = res.indexOf("&password");
+                String user_name = res.substring(9, stringIndex);
+                String pass=res.substring(stringIndex+10);
+                username.setText(user_name);
+                password.setText(pass);
+            }
         }
         else {
             Intent i = new Intent(MainActivity.this, AtyLogin.class);
