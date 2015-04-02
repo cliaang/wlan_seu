@@ -42,6 +42,9 @@ public class AtyLogin extends Activity {
         }
         int stringIndex = res.indexOf("&password");
         String username = res.substring(9, stringIndex);
+        if (username.equals("")){
+            username="无，请更改";
+        }
         userInfo.setText(userInfo.getText()+username);
 
         findViewById(R.id.btn_change).setOnClickListener(new View.OnClickListener() {
@@ -138,7 +141,7 @@ public class AtyLogin extends Activity {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            String[] messages = new String[]{"opining wifi", "wifi open success","connecting to seu_wlan","start to login"};
+            String[] messages = new String[]{"正在打开Wifi", "Wifi打开成功","正在连接至seu_wlan","正在登录"};
             tv_answer.setText(messages[values[0]]);
             super.onProgressUpdate(values);
         }

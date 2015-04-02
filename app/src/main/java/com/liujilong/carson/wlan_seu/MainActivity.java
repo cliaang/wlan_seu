@@ -21,7 +21,7 @@ public class MainActivity extends Activity {
 
     public final static String FILE_NAME = "com.liujilong.carson.wlan_seu";
     public  File file;
-    private TextView username, password,result;
+    private TextView username, password;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +33,6 @@ public class MainActivity extends Activity {
             setContentView(R.layout.activity_main);
             username = (TextView) findViewById(R.id.username);
             password = (TextView) findViewById(R.id.password);
-            result = (TextView) findViewById(R.id.result);
             findViewById(R.id.commit).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

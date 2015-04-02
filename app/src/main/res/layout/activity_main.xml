@@ -11,12 +11,15 @@
 
 
     <TextView
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="30dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="username" />
+        android:text="一卡通号" />
 
     <EditText
+        style="@style/my_edittext_style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
@@ -24,12 +27,15 @@
         android:id="@+id/username" />
 
     <TextView
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="password" />
+        android:text="密码" />
 
     <EditText
+        style="@style/my_edittext_style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
@@ -37,14 +43,12 @@
         android:id="@+id/password" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="commit"
-        android:id="@+id/commit" />
+        android:text="保存"
+        android:textSize="20sp"
+        android:id="@+id/commit"
+        android:background="@drawable/shape"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/result" />
 </LinearLayout>

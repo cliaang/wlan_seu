@@ -5,4 +5,9 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="my_edittext_style" parent="@android:style/Widget.EditText">
+
+    <item name="android:background">@drawable/my_edittext</item>
+    </style>
+
 </resources>
