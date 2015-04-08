@@ -3,6 +3,7 @@ package com.liujilong.carson.wlan_seu;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -11,47 +12,48 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import org.apache.http.util.EncodingUtils;
-
-import java.io.File;
-import java.io.FileInputStream;
-
 
 public class AtyLogin extends Activity {
+    SharedPreferences sp ;
+    private String userName, passWord;
     private TextView userInfo, tv_answer;
-    public  File file;
+//    public  File file;
     private String res="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        file = new File(AtyLogin.this.getFilesDir(), MainActivity.FILE_NAME);
+//        file = new File(AtyLogin.this.getFilesDir(), MainActivity.FILE_NAME);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.aty_login);
         userInfo= (TextView) findViewById(R.id.textView);
         tv_answer= (TextView) findViewById(R.id.tv_answer);
-        Log.i("tag", file.exists() ? "exist" : "not exist");
-        try{
-            FileInputStream fin = openFileInput(MainActivity.FILE_NAME);
-            int length = fin.available();
-            byte [] buffer = new byte[length];
-            fin.read(buffer);
-            res = EncodingUtils.getString(buffer, "UTF-8");
-            fin.close();
+        sp = getApplicationContext().getSharedPreferences("USER_INFO",Context.MODE_PRIVATE);
+        userName = sp.getString("userName","");
+        passWord = sp.getString("passWord","");
+        res = "username="+userName+"&password="+passWord;
+//        Log.i("tag", file.exists() ? "exist" : "not exist");
+//        try{
+////            FileInputStream fin = openFileInput(MainActivity.FILE_NAME);
+//            int length = fin.available();
+//            byte [] buffer = new byte[length];
+//            fin.read(buffer);
+//            res = EncodingUtils.getString(buffer, "UTF-8");
+//            fin.close();
+//        }
+//        catch(Exception e){
+//            e.printStackTrace();
+//        }
+//        int stringIndex = res.indexOf("&password");
+//        String username = res.substring(9, stringIndex);
+        if (userName.equals("")){
+            userName="无，请更改";
         }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        int stringIndex = res.indexOf("&password");
-        String username = res.substring(9, stringIndex);
-        if (username.equals("")){
-            username="无，请更改";
-        }
-        userInfo.setText(userInfo.getText()+username);
+        userInfo.setText(userInfo.getText()+userName);
 
         findViewById(R.id.btn_change).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(AtyLogin.this, MainActivity.class);
-                i.putExtra("has username",true);
+                i.putExtra("Change User Info",true);
                 startActivity(i);
                 finish();
             }
@@ -100,16 +102,6 @@ public class AtyLogin extends Activity {
             wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
             wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
             wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-//                        WifiConfiguration tempConfig = null;
-////                        try {
-//                            tempConfig = IsExsits("seu-wlan");
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-
-//                        if (tempConfig != null) {
-//                            wifiManager.removeNetwork(tempConfig.networkId);
-//                        }
             publishProgress(2);  //connecting to seu_wlan
             int netID = wifiManager.addNetwork(wifiConfig);
             Log.i("tag","netId: "+netID);
@@ -118,16 +110,6 @@ public class AtyLogin extends Activity {
             boolean connected = wifiManager.reconnect();
             Log.i("tag", "enableNetwork connected=" + connected);
 
-            new Thread(){
-                public void run(){
-                    try {
-                        Thread.sleep(30000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    cancel(true);
-                }
-            }.start();
             publishProgress(3);  //start to login
             HttpRequest hr = new HttpRequest(this);
             String ans = null;
